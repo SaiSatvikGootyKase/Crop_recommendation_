@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #4caf50;
+            --accent-color: #8bc34a;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            height: 20px;
+            line-height: 20px;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+            height: 50px;
+            min-height: 50px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+        }
+        
+        .form-text {
+            height: 16px;
+            line-height: 16px;
+            margin-top: 0.25rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+            border: 2px solid var(--accent-color);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+            display: none;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .result-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .crop-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-score {
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner-border {
+            color: var(--primary-color);
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-card h4 {
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-card p {
+            margin-bottom: 0;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        .form-row {
+            display: flex;
+            align-items: stretch;
+        }
+        
+        .form-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+        
+        .d-flex.align-items-end {
+            align-items: flex-end !important;
+        }
+        .top-predictions {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .prediction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .prediction-crop {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .prediction-confidence {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-seedling me-2"></i>
+                CropAI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="container text-center">
+            <h1 class="hero-title">Smart Crop Recommendations</h1>
+            <p class="hero-subtitle">Get AI-powered crop suggestions based on your soil and climate conditions</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Form Container -->
+        <div class="form-container">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-leaf me-2"></i>
+                Enter Your Soil Parameters
+            </h2>
+            
+            <form id="cropForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="N" class="form-label">
+                            <i class="fas fa-atom me-2"></i>
+                            Nitrogen (N) - kg/ha
+                        </label>
+                        <input type="number" class="form-control" id="N" name="N" 
+                               placeholder="0-140" min="0" max="140" step="1" required>
+                        <div class="form-text">Range: 0-140 kg/ha</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="P" class="form-label">
+                            <i class="fas fa-flask me-2"></i>
+                            Phosphorus (P) - kg/ha
+                        </label>
+                        <input type="number" class="form-control" id="P" name="P" 
+                               placeholder="5-145" min="5" max="145" step="1" required>
+                        <div class="form-text">Range: 5-145 kg/ha</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="K" class="form-label">
+                            <i class="fas fa-bolt me-2"></i>
+                            Potassium (K) - kg/ha
+                        </label>
+                        <input type="number" class="form-control" id="K" name="K" 
+                               placeholder="5-205" min="5" max="205" step="1" required>
+                        <div class="form-text">Range: 5-205 kg/ha</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="temperature" class="form-label">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Temperature (°C)
+                        </label>
+                        <input type="number" class="form-control" id="temperature" name="temperature" 
+                               placeholder="8.8-43.7" min="8.8" max="43.7" step="0.1" required>
+                        <div class="form-text">Range: 8.8-43.7°C</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="humidity" class="form-label">
+                            <i class="fas fa-tint me-2"></i>
+                            Humidity (%)
+                        </label>
+                        <input type="number" class="form-control" id="humidity" name="humidity" 
+                               placeholder="14.0-99.9" min="14.0" max="99.9" step="0.1" required>
+                        <div class="form-text">Range: 14.0-99.9%</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="ph" class="form-label">
+                            <i class="fas fa-vial me-2"></i>
+                            pH Level
+                        </label>
+                        <input type="number" class="form-control" id="ph" name="ph" 
+                               placeholder="3.5-10.0" min="3.5" max="10.0" step="0.1" required>
+                        <div class="form-text">Range: 3.5-10.0</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="rainfall" class="form-label">
+                            <i class="fas fa-cloud-rain me-2"></i>
+                            Rainfall (mm)
+                        </label>
+                        <input type="number" class="form-control" id="rainfall" name="rainfall" 
+                               placeholder="20.0-298.0" min="20.0" max="298.0" step="0.1" required>
+                        <div class="form-text">Range: 20.0-298.0 mm</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-magic me-2"></i>
+                            Get Recommendation
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Analyzing your soil parameters...</p>
+        </div>
+
+        <!-- Result Card -->
+        <div class="result-card" id="resultCard" style="display: none;">
+            <div class="result-icon">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="crop-name" id="cropName"></div>
+            <div class="confidence-score" id="confidenceScore"></div>
+            
+            <!-- Top 3 Predictions -->
+            <div class="top-predictions mt-3" id="topPredictions">
+                <h6 class="text-muted mb-2">Top Recommendations:</h6>
+                <div class="prediction-list" id="predictionList"></div>
+            </div>
+            
+            <p class="mt-3 text-muted">This recommendation is based on machine learning analysis of your soil and climate conditions.</p>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI-Powered</h4>
+                    <p>Advanced machine learning algorithms provide accurate crop recommendations</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Data-Driven</h4>
+                    <p>Based on comprehensive soil and climate data analysis</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Mobile Friendly</h4>
+                    <p>Responsive design works perfectly on all devices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 CropAI. Powered by Machine Learning.</p>
+            <p>Developed with ❤️ for better farming decisions</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize page - hide loading and result by default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'none';
+        });
+
+        document.getElementById('cropForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate form inputs
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Check if all fields are filled
+            const requiredFields = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall'];
+            for (let field of requiredFields) {
+                if (!data[field] || data[field].trim() === '') {
+                    alert(`Please fill in the ${field} field`);
+                    return;
+                }
+            }
+            
+            // Show loading and hide previous results
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('resultCard').style.display = 'none';
+            
+            try {
+                console.log('Sending data:', data);
+                
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                console.log('Received result:', result);
+                
+                if (result.success) {
+                    // Display main result
+                    document.getElementById('cropName').textContent = result.prediction.toUpperCase();
+                    document.getElementById('confidenceScore').textContent = `Confidence: ${result.confidence}%`;
+                    
+                    // Display top 3 predictions
+                    const predictionList = document.getElementById('predictionList');
+                    predictionList.innerHTML = '';
+                    
+                    if (result.top_predictions && result.top_predictions.length > 0) {
+                        result.top_predictions.forEach((pred, index) => {
+                            const predItem = document.createElement('div');
+                            predItem.className = 'prediction-item';
+                            predItem.innerHTML = `
+                                <span class="prediction-crop">${index + 1}. ${pred.crop.toUpperCase()}</span>
+                                <span class="prediction-confidence">${pred.confidence}%</span>
+                            `;
+                            predictionList.appendChild(predItem);
+                        });
+                    }
+                    
+                    document.getElementById('resultCard').style.display = 'flex';
+                    
+                    // Log detailed results for debugging
+                    console.log('Full prediction results:', result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        // Add input validation and real-time feedback
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                const min = parseFloat(this.min);
+                const max = parseFloat(this.max);
+                
+                if (value < min || value > max) {
+                    this.style.borderColor = '#dc3545';
+                    this.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+                } else {
+                    this.style.borderColor = '#e9ecef';
+                    this.style.boxShadow = 'none';
+                }
+            });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Clear form and results when page loads
+        window.addEventListener('load', function() {
+            document.getElementById('cropForm').reset();
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
