@@ -351,7 +351,9 @@ if __name__ == '__main__':
     
     if model is not None and scaler is not None:
         print("✅ Application ready!")
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        # Get port from environment variable (for cloud deployment)
+        port = int(os.environ.get('PORT', 5000))
+        app.run(debug=False, host='0.0.0.0', port=port)
     else:
         print("❌ Failed to load model. Application cannot start.")
         exit(1)
